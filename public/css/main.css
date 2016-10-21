@@ -1,0 +1,66 @@
+html, body, div {
+	font-family: 'Montserrat', sans-serif;
+}
+img {
+	width:100%;
+}
+.jumbotron {
+	background: #2e3b44 url("http://p2pbs.com/home/wp-content/uploads/2015/05/E-commerce-banner.jpg");
+	background-size: cover;
+	min-height:300px;
+	padding:7em;
+}
+.jumbotron h1 {
+	color: #FFF;
+}
+.jumbotron p {
+	color: #BDC5CA;
+}
+.jumbotron .container {
+	background-color: rgba(0,0,0,0.5);
+	border-radius: 40px;
+}
+.col-md-4 {
+	margin-bottom:15px;
+}
+.btn-group button, .btn-group button:hover {
+	border-color:#EE4632;
+}
+.btn-group button {
+	color:#EE4632;
+	background-color:transparent;
+}
+.btn-group button:hover {
+	background-color:#EE4632;
+	color:#FFF;
+}
+.container.text-center a {
+
+    padding: 0.5em 4em;
+}
+.off {
+	display:none;
+}
+.on {
+	display:block;
+}
+.btn-filestack {
+	background-color: #EE4632;
+	border-color: #EE4632;
+}
+.btn-filestack, .btn-filestack:hover {
+	color: #FFF;
+}
+.btn-filestack:hover {
+	background-color: #db2812;
+}
+.navbar-inverse {
+	background-color: #283A46;
+    border-bottom-color: #8D98A0;
+}
+.navbar-brand {
+	color: #FFF !important;
+}
+.navbar-nav li a{
+	color:#BAC3C9 !important;
+}

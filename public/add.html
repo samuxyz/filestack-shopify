@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Imagestack app">
+  <meta name="author" content="Samuele Zaza">
+  <meta name="mail" content="zaza.samuele@gmail.com">
+  <link rel="icon" href="https://assets.filestackapi.com/web/c3417dc/img/favicon.ico">
+
+  <title>Imagestack</title>
+
+  <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+  <link href="./css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+  <link href="./css/jumbotron.css" rel="stylesheet">
+  <link href="./css/main.css" rel="stylesheet">
+  
+	</head>
+	<body>  
+		<!-- Fixed navbar -->
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">Filestack-Shopify</a>
+				</div>
+				<div id="navbar" class="navbar-collapse collapse">
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="./index.html">Home</a></li>
+					</ul>
+					</div><!--/.nav-collapse -->
+				</div>
+			</nav>
+			<div class="container">
+				
+				<div class="row">
+					
+					<div class=".col-md-offset-4 media-list">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h2 class="panel-title text-center">
+								<span class="glyphicon glyphicon-file"></span> Product form
+								</h2>
+							</div>
+							<div class="panel-body">
+								<form name="document-form" novalidate>
+									<div class="form-group">
+										<label for="caption">Title</label>
+										<input id="title" type="text" value="" class="form-control" placeholder="Enter the caption..."/>
+									</div>
+									<div class="form-group">
+										<label for="description">Description</label>
+										<input id="description" type="text" value="" class="form-control" placeholder="Enter the description..."/>
+									</div>
+									<div class="form-group">
+										<label for="price">Price</label>
+										<input id="price" type="number" value="" class="form-control" placeholder="Enter the price..."/>
+									</div>
+
+									<div class="form-group">
+										<label for="picture">File</label>
+										<div class="progress">
+											<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+												0%
+											</div>
+										</div>
+										<div class="thumbnail off">
+							            	<img src="" alt="" class="img-rounded"></img>
+							            </div>
+										<div class="text-center dropup">
+											<button type="button" class="btn btn-default filepicker">
+											Upload <span class="caret"></span>
+											</button>
+											
+										</div>
+									</div>
+									<button class="btn btn-filestack btn-block submit">Submit</button>
+								</form>
+							</div>
+						</div>
+						
+						
+					</div>
+				</div>
+			</div>
+			<!-- JS -->
+			<script src="//code.jquery.com/jquery-3.0.0.min.js"></script>
+			<script src="//api.filestackapi.com/filestack.js"></script>
+			<script>
+			filepicker.setKey("AfcnFThTU4ebKMjxRMngSz");
+			$(document).ready(function(){
+				$('.filepicker').on('click', function(){
+					var _this = $(this); 
+					filepicker.pick(
+					 {
+					    mimetype: 'image/*',
+					    hide: true,
+					    maxSize: 2*1024*1024,
+					    imageQuality: 90,
+    					imageDim: [800, null],
+					    services: ['COMPUTER', 'FACEBOOK'],
+					    openTo: 'COMPUTER'
+					  },
+					  function(Blob) {
+					    setTimeout(previewImage(Blob.url), 2000);
+					    console.log(JSON.stringify(Blob));
+					    _this.data("doc-url", Blob.url);
+					  },
+					  function(FPError) {
+						console.log(FPError.toString());
+					  },
+					  function(FPProgress) {
+					  	console.log(parseInt(FPProgress.progress));
+					  	progressPercentage = parseInt(FPProgress.progress) + '%';
+					  	$('.progress-bar').css('width', progressPercentage).text(progressPercentage);
+					  }
+					);
+				});
+			});
+			function previewImage(url){
+				$('.progress-bar')
+					.removeClass('progress-bar-striped active')
+					.addClass('progress-bar-success'); 
+				$('.thumbnail')
+					.removeClass('off')
+					.addClass('on')
+					.find('img')
+					.attr('src', url);
+			}
+			function sendToServer(data) {
+		        var product = {
+				  "product": {
+				    "title": $('#title').val(),
+				    "body_html": $('#description').val(),
+				    "images" : [{ "src" : $('.filepicker').data('doc-url') }], 
+				    "variants": [
+				      {
+				        "price": $('#price').val(),
+				        "sku": Date.now()
+				      }
+				    ]
+				  }
+				}
+		        $.ajax(
+			        {
+			          url: "/product",
+			          method: "POST",
+			          data: product,
+			          dataType: "json"
+			        }
+		        )
+		        .done(function(data){
+		          console.log(data);
+		          alert("successfully added!");
+		          location.reload();
+		        })
+		        .fail(function(e){ console.log("ERROR: " + e)});
+			}
+			$(document).ready(function(){
+				$('.submit').on('click', function(e){
+					e.preventDefault();
+					var url = $('.filepicker').data('doc-url');
+					if(typeof url != 'undefined') {
+						sendToServer();
+					}else {
+						alert("Do not forget to upload the image!");
+					}
+				});
+			});
+			</script>
+		</body>
+	</html>

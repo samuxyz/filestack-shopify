@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Imagestack app">
+  <meta name="author" content="Samuele Zaza">
+  <meta name="mail" content="zaza.samuele@gmail.com">
+  <link rel="icon" href="https://assets.filestackapi.com/web/c3417dc/img/favicon.ico">
+
+  <title>Imagestack</title>
+
+  <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+  <link href="./css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+  <link href="./css/jumbotron.css" rel="stylesheet">
+  <link href="./css/main.css" rel="stylesheet">
+  
+</head>
+<body>
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Filestack-Shopify</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+      </div>
+      </div>
+    </nav>
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container text-center">
+        <h1>Imagestack gallery</h1>
+        <p>Use Filestack to rapidly upload your pictures, share with everyone your most precious memories.</p>
+        <p><a class="btn btn-filestack btn-lg" href="./add.html" role="button">Start</a></p>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row" id="image-list"></div>
+      <hr>
+      <footer>
+        <p>© 2016 Samuele Zaza, Filestack Tech Evangelist.</p>
+      </footer>
+    </div>
+      <script src="//api.filepicker.io/v2/filepicker.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.16/browser.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+      <script type="text/babel">
+      filepicker.setKey("AfcnFThTU4ebKMjxRMngSz");
+      filepicker.setResponsiveOptions(
+      {
+        onResize: 'all',
+        pixelRound: 20
+      });
+      class Image extends React.Component {
+        render() {
+          return (
+            <div className="col-md-4">
+              <div className="thumbnail">
+                <img src={this.props.image} className="img-rounded"></img>
+              </div>
+              <h2>{this.props.title}</h2>
+              <h3>{this.props.description}</h3>
+              <h4>${this.props.price}</h4>
+              <div className="text-center">
+                <button type="button" className="btn btn-filestack"><i className="glyphicon glyphicon-share"></i> Add to Cart</button>
+              </div>
+            </div>
+          );
+        }
+      }
+      class ImageBox extends React.Component {
+        constructor() {
+          super();
+          this.state = {products:[]};
+        }
+        loadImages(url) {
+          $.ajax({
+            url: url,
+            dataType: 'json',
+            cache: false,
+            success: data => {
+              console.log('here');
+              this.setState({products: data.products});
+            },
+            error: (xhr, status, err) => {
+              console.error(this.props.url, status, err.toString());
+            }
+          });
+        }
+        componentDidMount() {
+          this.loadImages(this.props.url);   
+        }
+        render() {
+          console.log(this.state.products);
+          var imagesList = this.state.products.map(image => {
+            console.log(image.images[0].src);
+            return (
+              <Image price={image.variants[0].price} key={image.id} image={image.images[0].src} title={image.title} description={image.body_html}>          
+              </Image>
+            );
+          });
+          return (
+            <div className="imagesList">
+              {imagesList}
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(
+        <ImageBox url="/product"/>,
+        document.getElementById('image-list')
+      );
+      </script>
+       
+    </body>
+    </html>
