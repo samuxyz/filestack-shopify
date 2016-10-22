@@ -31,7 +31,6 @@ var Shopify = new shopifyAPI({
 app.route('/product')
 	.get(function(req, res) {
 		Shopify.get('/admin/products.json', function(err, data, headers){
-		  console.log(data); // Data contains product json informatio
 		  res.json(data);
 		});
 		
@@ -39,7 +38,6 @@ app.route('/product')
 	.post(function(req, res) {
 		var product = req.body;
 		Shopify.post('/admin/products.json', product, function(err, data, headers){
-		  console.log(data);
 		  res.json(data);
 		});
 	})
